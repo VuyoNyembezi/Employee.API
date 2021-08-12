@@ -20,7 +20,14 @@ namespace EmployeeDAL.Models
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<Nationality> Nationalities { get; set; }
-        public virtual DbSet<Admins> Admin { get; set; }
+
+        //Login Models and Db Sets
+
+        public virtual DbSet<Users> User { get; set; }
+        public virtual DbSet<Roles> Role { get; set; }
+        public virtual DbSet<Departments> Department { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -106,44 +113,103 @@ namespace EmployeeDAL.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<Admins>(entity =>
-                {
-                    entity.HasKey(e => e.Id);
-                    entity.ToTable("Admins");
+            modelBuilder.Entity<Users>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.ToTable("Users");
 
-                    entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("Id");
+                entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("Id");
 
-                    entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
-                    entity.Property(e => e.Password)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
-                    entity.Property(e => e.AdminName)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.AdminName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
-                    entity.Property(e => e.City)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                    entity.Property(e => e.Department)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-                });
+                entity.Property(e => e.FkCityId).HasColumnName("FK_CityID");
+                entity.HasOne(d => d.FkCity)
+               .WithMany(p => p.User)
+               .HasForeignKey(d => d.FkCityId)
+               .OnDelete(DeleteBehavior.ClientSetNull)
+               .HasConstraintName("FK_Users_City");
 
 
+                entity.Property(e => e.FkDepartmentId).HasColumnName("FK_DepartmentID");
+                entity.HasOne(d => d.FkDepartment)
+               .WithMany(p => p.User)
+               .HasForeignKey(d => d.FkDepartmentId)
+               .OnDelete(DeleteBehavior.ClientSetNull)
+               .HasConstraintName("FK_Users_Department");
 
+                entity.Property(e => e.VerificationCode)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
+                entity.Property(e => e.FkRoleId).HasColumnName("FK_RoleID");
+
+                entity.HasOne(d => d.FkRole)
+                .WithMany(p => p.User)
+                .HasForeignKey(d => d.FkRoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Users_Roles");
+            });
+
+            modelBuilder.Entity<Departments>(entity =>
+            {
+                entity.HasKey(e => e.DepartmentID);
+                entity.ToTable("Departments");
+
+                entity.Property(e => e.DepartmentID)
+                .ValueGeneratedNever()
+                .HasColumnName("DepartmentID");
+
+                entity.Property(e => e.DepartmentName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<City>(entity =>
+            {
+                entity.HasKey(e => e.CityID);
+                entity.ToTable("City");
+
+                entity.Property(e => e.CityID)
+                .ValueGeneratedNever()
+                .HasColumnName("CityID");
+
+                entity.Property(e => e.CityName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Roles>(entity =>
+            {
+                entity.HasKey(e => e.RoleId);
+                entity.ToTable("Roles");
+
+                entity.Property(e => e.RoleId)
+                .ValueGeneratedNever()
+                .HasColumnName("RoleId");
+
+                entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            });
 
 
 

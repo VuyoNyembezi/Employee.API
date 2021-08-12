@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EmployeeDAL.Models;
 using EmployeeDAL.Admin;
+
 namespace BL.EmployeeBusinessLayer
 {
     public interface IEmployeeBL
@@ -16,8 +17,8 @@ namespace BL.EmployeeBusinessLayer
         Task<Employee> InsertEmployee(Employee employee);
 
         //Login 
-        object CreateProfile(Register register);
-
-        Response Adminlogin(Login login);
+        // object CreateProfile(Register register);
+        Task<int> CreateProfile(Register register);
+        Task<UserModel> Adminlogin(Login login);
     }
 }

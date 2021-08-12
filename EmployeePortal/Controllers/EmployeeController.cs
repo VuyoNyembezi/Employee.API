@@ -1,4 +1,5 @@
 ﻿using BL.EmployeeBusinessLayer;
+using BL.Logging;
 using EmployeeDAL.Admin;
 using EmployeeDAL.Models;
 using Microsoft.AspNetCore.Cors;
@@ -17,9 +18,11 @@ namespace EmployeePortal.Controllers
     public class EmployeeController : ControllerBase
     {
         private IEmployeeBL _employeeBL;
-        public EmployeeController(IEmployeeBL employeeBL)
+        private ILogsManager _logger;
+        public EmployeeController(IEmployeeBL employeeBL,ILogsManager logger)
         {
             _employeeBL = employeeBL;
+            _logger = logger;
         }
 
         [HttpGet]     
@@ -27,13 +30,14 @@ namespace EmployeePortal.Controllers
         {
             try
             {
+                _logger.Infor("Employees data accessed");
                 return Ok(await _employeeBL.GetEmployees());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from database server");
             }
-           
         }
 
         [HttpGet("{EmployeeID}")]
@@ -44,48 +48,45 @@ namespace EmployeePortal.Controllers
                 var result = await _employeeBL.GetById(EmployeeID);
                 if (result == null)
                 {
+                    _logger.Infor($"No records were found when of ID ={EmployeeID}");
                     return NotFound();
                 }
+                _logger.Infor($"Employee with ID ={EmployeeID}, Data was accessed");
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
-           
         }
 
         [HttpPut]    
-        public async Task<ActionResult<Employee>> UpdateEmployee(int employeeID,Employee employee)
-        {
+        public async Task<ActionResult<Employee>> UpdateEmployee(Employee employee)
+        {   
             try
             {
                var result = await _employeeBL.UpdateEmployee(employee);
-
                 if (result != null)
                 {
-                    if(employeeID != employee.EmployeeId)
+                    if (employee.EmployeeId != null)
                     {
-                        return StatusCode(StatusCodes.Status404NotFound, $"No record to update with an Id={employeeID} was found");
+                        return StatusCode(StatusCodes.Status200OK, $"record with Id = {employee.EmployeeId} details Updated");
                     }
-                    else if (employeeID == employee.EmployeeId)
-                    {
-                        return StatusCode(StatusCodes.Status200OK, $"record with Id ={employeeID} details Updated");
-                    }
+                    _logger.Infor($"Employee Details of ID = {employee.EmployeeId} were updated ");
                     return result;
-
                 }
                 return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
-            }
-           
+            }    
         }
 
         [HttpDelete]
-        public async Task<ActionResult<Employee>> TerminateEmployee(int EmployeeID,Employee employee)
+        public async Task<ActionResult<Employee>> TerminateEmployee(Employee employee)
         {
             try
             {
@@ -93,23 +94,16 @@ namespace EmployeePortal.Controllers
 
                 if (result != null)
                 {
-                    if (EmployeeID != employee.EmployeeId)
-                    {
-                        return StatusCode(StatusCodes.Status404NotFound, $"No record To Terminate Found with EmployeeID={EmployeeID}");
-                    }
-                    else if (EmployeeID ==employee.EmployeeId)
-                    {
-                        return StatusCode(StatusCodes.Status200OK, $"record with EmployeeID= {EmployeeID} was Successfully Terminated");
-                    }
-                    return result;
+                    _logger.Infor($"Employee with ID {employee.EmployeeId} is Terminated");
+                    return StatusCode(StatusCodes.Status200OK, $"Employee with EmployeeID= {employee.EmployeeId} was Successfully Terminated");    
                 }
                 return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Erro Accessing the Database ");
-            }
-           
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing the Database ");
+            }        
         }
 
         [HttpPost]
@@ -118,20 +112,18 @@ namespace EmployeePortal.Controllers
             try
             {
                 var result = await _employeeBL.InsertEmployee(employee);
-
                 if(result != null)
                 {
-                    return result;
-                }
-                return null;
-            }
-            catch (Exception)
+                    _logger.Infor($"new record succeffully added  {employee.FirstName}  {employee.Surname}");
+                    return StatusCode(StatusCodes.Status200OK, $"new record added {employee.FirstName}  {employee.Surname}");
+                }              
+                 return StatusCode(StatusCodes.Status400BadRequest, "no new record added please check input");
+            }            
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error no new record saved check input and try again or contact support");
-            }
-            
-        }
-
-        
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server Error, try again or contact support");
+            }       
+        }    
     }
 }

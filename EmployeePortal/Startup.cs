@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BL.LoginBussinesLayer;
-using BL.EmployeeBusinessLayer;
 
+using BL.EmployeeBusinessLayer;
+using BL.Logging;
 namespace EmployeePortal
 {
     public class Startup
@@ -20,7 +20,6 @@ namespace EmployeePortal
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-           
         }
 
         public IConfiguration Configuration { get; }
@@ -33,11 +32,12 @@ namespace EmployeePortal
             .AllowAnyHeader()
             .AllowAnyMethod());
             });
-           
 
             services.AddTransient<IEmployeeBL, EmployeeBL>();
-            //services.AddScoped<ILoginBL, LoginBL>();
+            services.AddSingleton<ILogsManager, LogsManagers>();
+
             services.AddControllers();
+            services.AddRouting();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +49,6 @@ namespace EmployeePortal
             }
 
             app.UseRouting();
-
             app.UseAuthorization();
             app.UseCors(_AllowCors);
             app.UseEndpoints(endpoints =>

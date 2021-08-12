@@ -8,7 +8,10 @@ namespace EmployeeDAL.Admin
 {
     public class Response
     {
+        public int? ReturnId { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
+
+        public int? Role { get; set; }
     }
 }

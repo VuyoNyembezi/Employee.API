@@ -4,17 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeDAL.Admin
+namespace EmployeeDAL.Models
 {
-    public class Register
+    public class UserModel
     {
-      
+       public int Id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string AdminName { get; set; }
         public int CityID { get; set; }
         public int DepartmentID { get; set; }
-        public string? VerificationCode { get; set; }
+
+        public string VerificationCode { get; set; }
         public int RoleID { get; set; }
+
+
     }
 }
