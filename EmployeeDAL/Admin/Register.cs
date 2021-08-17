@@ -14,7 +14,7 @@ namespace EmployeeDAL.Admin
         public string AdminName { get; set; }
         public int CityID { get; set; }
         public int DepartmentID { get; set; }
-        public string? VerificationCode { get; set; }
+        public string VerificationCode { get; set; }
         public int RoleID { get; set; }
     }
 }

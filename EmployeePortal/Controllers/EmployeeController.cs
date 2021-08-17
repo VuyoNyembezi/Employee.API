@@ -1,13 +1,11 @@
 ﻿using BL.EmployeeBusinessLayer;
 using BL.Logging;
-using EmployeeDAL.Admin;
 using EmployeeDAL.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Threading.Tasks;
 
 namespace EmployeePortal.Controllers
@@ -45,7 +43,7 @@ namespace EmployeePortal.Controllers
         {
             try
             {
-                var result = await _employeeBL.GetById(EmployeeID);
+                var result = Ok(await _employeeBL.GetEmployee(EmployeeID));
                 if (result == null)
                 {
                     _logger.Infor($"No records were found when of ID ={EmployeeID}");
@@ -124,6 +122,36 @@ namespace EmployeePortal.Controllers
                 _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Server Error, try again or contact support");
             }       
-        }    
+        }
+
+
+        [Route("Gender")]
+        [HttpGet]
+        public async Task<ActionResult> GetGenders()
+        {
+            try
+            {
+                return Ok(await _employeeBL.GetGender());
+            }
+            catch (Exception EX)
+            {
+                _logger.Error(EX.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,"Error retrieving data from the database");
+            }
+        }
+        [Route("Nationality")]
+        [HttpGet]
+        public async Task<ActionResult> GetDepartment()
+        {
+            try
+            {
+                return Ok(await _employeeBL.GetNationality());
+            }
+            catch (Exception EX)
+            {
+                _logger.Error(EX.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,"Error retrieving data from the database");
+            }
+        }
     }
 }

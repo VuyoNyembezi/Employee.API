@@ -8,8 +8,8 @@ namespace EmployeeDAL.Models
 {
     public class EmployeeModel
     {
-        
-        public int EmployeeID { get; set; }
+
+        public int EmployeeId { get; set; }
         public string FirstName { get; set; }
         public string Surname { get; set; }
         public string DateOfBirth { get; set; }

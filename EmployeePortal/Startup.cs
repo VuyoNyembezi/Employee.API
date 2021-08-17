@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 using BL.EmployeeBusinessLayer;
 using BL.Logging;
+using BL.UserBussinessLayer;
+
 namespace EmployeePortal
 {
     public class Startup
@@ -34,6 +36,7 @@ namespace EmployeePortal
             });
 
             services.AddTransient<IEmployeeBL, EmployeeBL>();
+            services.AddScoped<IUserBL, UserBL>();
             services.AddSingleton<ILogsManager, LogsManagers>();
 
             services.AddControllers();
