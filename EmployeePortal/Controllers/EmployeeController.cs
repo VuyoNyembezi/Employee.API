@@ -67,10 +67,6 @@ namespace EmployeePortal.Controllers
                var result = await _employeeBL.UpdateEmployee(employee);
                 if (result != null)
                 {
-                    if (employee.EmployeeId != null)
-                    {
-                        return StatusCode(StatusCodes.Status200OK, $"record with Id = {employee.EmployeeId} details Updated");
-                    }
                     _logger.Infor($"Employee Details of ID = {employee.EmployeeId} were updated ");
                     return result;
                 }
@@ -89,7 +85,6 @@ namespace EmployeePortal.Controllers
             try
             {
                 var result = await _employeeBL.TermianteEmployee(employee);
-
                 if (result != null)
                 {
                     _logger.Infor($"Employee with ID {employee.EmployeeId} is Terminated");

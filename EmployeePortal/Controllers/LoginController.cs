@@ -107,7 +107,7 @@ namespace EmployeePortal.Controllers
                     _logger.Infor($"Employee Details of ID = {passwordreset.Email} were updated ");
                     return new Response{Status="Success",Message="Password reset successful"};
                 }
-                return new Response { Status = "Failed", Message = "process failed" };
+                return new Response { Status = "Failed", Message = "process failed please check  input" };
             }
             catch (Exception ex)
             {

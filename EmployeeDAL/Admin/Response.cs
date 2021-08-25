@@ -11,7 +11,6 @@ namespace EmployeeDAL.Admin
         public int? ReturnId { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
-
         public int? Role { get; set; }
     }
 }

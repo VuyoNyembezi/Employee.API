@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -16,13 +17,11 @@ namespace EmployeeDAL.Models
             : base(options)
         {
         }
-
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<Nationality> Nationalities { get; set; }
 
         //Login Models and Db Sets
-
         public virtual DbSet<Users> User { get; set; }
         public virtual DbSet<Roles> Role { get; set; }
         public virtual DbSet<Departments> Department { get; set; }
@@ -32,11 +31,9 @@ namespace EmployeeDAL.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Testing;Trusted_Connection=True;");
             }
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
@@ -144,7 +141,6 @@ namespace EmployeeDAL.Models
                .OnDelete(DeleteBehavior.ClientSetNull)
                .HasConstraintName("FK_Users_City");
 
-
                 entity.Property(e => e.FkDepartmentId).HasColumnName("FK_DepartmentID");
                 entity.HasOne(d => d.FkDepartment)
                .WithMany(p => p.User)
@@ -211,11 +207,8 @@ namespace EmployeeDAL.Models
                 .IsUnicode(false);
             });
 
-
-
             OnModelCreatingPartial(modelBuilder);
         }
-
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

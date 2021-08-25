@@ -10,10 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 using BL.EmployeeBusinessLayer;
 using BL.Logging;
 using BL.UserBussinessLayer;
+using EmployeeDAL.Models;
 
 namespace EmployeePortal
 {
@@ -23,18 +24,17 @@ namespace EmployeePortal
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         private readonly string _AllowCors = "CorsPolicy";
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddCors(options => { options.AddPolicy(name: _AllowCors, builder => builder.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod());
             });
-
             services.AddTransient<IEmployeeBL, EmployeeBL>();
             services.AddScoped<IUserBL, UserBL>();
             services.AddSingleton<ILogsManager, LogsManagers>();

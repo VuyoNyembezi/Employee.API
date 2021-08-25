@@ -6,18 +6,15 @@ using EmployeeDAL.Models;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
-
+using Microsoft.Extensions.Configuration;
 
 namespace BL.EmployeeBusinessLayer
 {
     public class EmployeeBL : IEmployeeBL
     {
-        TestingContext _db = new TestingContext();
-
-        private readonly string connectionstring = "Server=(localdb)\\mssqllocaldb;Database=Testing;Trusted_Connection=True;";
-
+       private readonly string connectionstring = "Server=(localdb)\\mssqllocaldb;Database=Testing;Trusted_Connection=True;";
         public async Task<IEnumerable<EmployeeModel>> GetEmployees()
-        {
+        {         
             using (var sqlConnection = new SqlConnection(connectionstring))
             {
                 await sqlConnection.OpenAsync();
@@ -29,7 +26,7 @@ namespace BL.EmployeeBusinessLayer
         }
 
         public async Task<IEnumerable<EmployeeModel>> GetEmployee(int EmployeeID)
-        {
+        {           
             using (var sqlConnection = new SqlConnection(connectionstring))
             {
                 await sqlConnection.OpenAsync();
@@ -42,9 +39,8 @@ namespace BL.EmployeeBusinessLayer
             }
         }
 
-
         public async Task<Employee> UpdateEmployee(Employee employee)
-        {
+        {   
             if (employee != null)
             {
                 using (var sqlConnection = new SqlConnection(connectionstring))
@@ -62,7 +58,7 @@ namespace BL.EmployeeBusinessLayer
             return null;
         }
         public async Task<Employee> TermianteEmployee(Employee employee)
-        {
+        {           
             if (employee != null)
             {
                 using (var sqlConnection = new SqlConnection(connectionstring))
@@ -78,7 +74,7 @@ namespace BL.EmployeeBusinessLayer
             return null;
         }
         public async Task<Employee> InsertEmployee(Employee employee)
-        {
+        {          
             if (employee != null)
             {
                 using (var sqlConnection = new SqlConnection(connectionstring))
@@ -100,9 +96,8 @@ namespace BL.EmployeeBusinessLayer
         }
 
         //GET Gender, Nationality##########################################################
-
         public async Task<IEnumerable<GenderModel>> GetGender()
-        {
+        {       
             using (var sqlConnection = new SqlConnection(connectionstring))
             {
                 await sqlConnection.OpenAsync();
@@ -110,7 +105,7 @@ namespace BL.EmployeeBusinessLayer
             }
         }
         public async Task<IEnumerable<NationalityModel>> GetNationality()
-        {
+        {         
             using (var sqlConnection = new SqlConnection(connectionstring))
             {
                 await sqlConnection.OpenAsync();

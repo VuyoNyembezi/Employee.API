@@ -9,16 +9,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using EmployeeDAL.Admin;
 
+
 namespace BL.UserBussinessLayer
 {
     public class UserBL :IUserBL
     {
         TestingContext _db = new TestingContext();
-
+    
         private readonly string connectionstring = "Server=(localdb)\\mssqllocaldb;Database=Testing;Trusted_Connection=True;";
-
         public async Task<int> CreateProfile(Register register)
-        {
+        { 
             if (register != null)
             {
                 using (var sqlConnection = new SqlConnection(connectionstring))
@@ -49,7 +49,7 @@ namespace BL.UserBussinessLayer
         }
 
         public async Task<UserModel> Adminlogin(Login login)
-        {
+        {   
             var getUser = (from s in _db.User where s.Email == login.Email select s).FirstOrDefault();
             if (getUser != null)
             {
@@ -73,6 +73,7 @@ namespace BL.UserBussinessLayer
 
         public async Task<Users> PasswordReset(Users reset)
         {
+            var getUser = (from s in _db.User where s.Email == reset.Email select s).FirstOrDefault();
             if (reset != null)
             {
                 using (var sqlConnection = new SqlConnection(connectionstring))
@@ -96,7 +97,7 @@ namespace BL.UserBussinessLayer
 
         //Get Departments ,Roles, Cities##############################################
         public async Task<IEnumerable<DepartmentModel>> GetDepartments()
-        {
+        { 
             using (var sqlConnection = new SqlConnection(connectionstring))
             {
                 await sqlConnection.OpenAsync();
@@ -112,7 +113,7 @@ namespace BL.UserBussinessLayer
             }
         }
         public async Task<IEnumerable<RolesModel>> GetRoles()
-        {
+        { 
             using (var sqlConnection = new SqlConnection(connectionstring))
             {
                 await sqlConnection.OpenAsync();
