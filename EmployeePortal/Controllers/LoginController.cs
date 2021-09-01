@@ -5,7 +5,6 @@ using EmployeeDAL.Models;
 using EmployeeDAL.Admin;
 using BL.Logging;
 using System;
-
 using System.Threading.Tasks;
 using BL.UserBussinessLayer;
 
@@ -39,7 +38,7 @@ namespace EmployeePortal.Controllers
             {
                 if (register != null)
                 {
-                    _logger.Infor($"new user Added to the Sytem administration name = {register.AdminName }, Email = { register.Email}");
+                    _logger.Infor($"new user Added to the Sytem administration Rights name : {register.AdminName }, Email : { register.Email}");
                    var result = await _loginbl.CreateProfile(register);
                     if (result >= 1)
                     {
@@ -72,7 +71,7 @@ namespace EmployeePortal.Controllers
             {
                 if (login != null)
                 {
-                    _logger.Infor($"Admin with ID = {login.Email} Accessed the Sytem");
+                    _logger.Infor($"Admin/User with email = {login.Email} Accessed the Sytem");
                     var results = await _loginbl.Adminlogin(login);
                     if (results != null)
                     {
@@ -104,7 +103,7 @@ namespace EmployeePortal.Controllers
                     {
                          StatusCode(StatusCodes.Status200OK, $"record with Id = {passwordreset.Email} password Updated");
                     }
-                    _logger.Infor($"Employee Details of ID = {passwordreset.Email} were updated ");
+                    _logger.Infor($"User's passsword with Email = {passwordreset.Email} is reseted ");
                     return new Response{Status="Success",Message="Password reset successful"};
                 }
                 return new Response { Status = "Failed", Message = "process failed please check  input" };

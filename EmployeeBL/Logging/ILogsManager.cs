@@ -20,3 +20,5 @@ namespace BL.Logging
         void Warning(string message);
     }
 }
+
+

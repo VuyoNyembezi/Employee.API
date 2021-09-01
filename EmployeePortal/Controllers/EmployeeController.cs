@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-
 using System.Threading.Tasks;
 
 namespace EmployeePortal.Controllers
@@ -46,7 +45,7 @@ namespace EmployeePortal.Controllers
                 var result = Ok(await _employeeBL.GetEmployee(EmployeeID));
                 if (result == null)
                 {
-                    _logger.Infor($"No records were found when of ID ={EmployeeID}");
+                    _logger.Infor($"No records were found whith ID ={EmployeeID}");
                     return NotFound();
                 }
                 _logger.Infor($"Employee with ID ={EmployeeID}, Data was accessed");
@@ -58,6 +57,43 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
+      
+
+        [HttpGet]
+     [Route("Terminated")]
+        public async Task<ActionResult<Object>> GetTerminatedEmployees()
+        {
+            try
+            {
+                return Ok(await _employeeBL.TerminatedEmployees());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving Data from database server");
+            }
+        }
+        [HttpGet("Terminated/{EmployeeID}")]
+        public async Task<ActionResult<Object>> GetTerminatedById(int EmployeeID)
+        {
+            try
+            {
+                var result = Ok(await _employeeBL.GetTerminatedByID(EmployeeID));
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the server");
+            }
+        }
+
+
+
 
         [HttpPut]    
         public async Task<ActionResult<Employee>> UpdateEmployee(Employee employee)

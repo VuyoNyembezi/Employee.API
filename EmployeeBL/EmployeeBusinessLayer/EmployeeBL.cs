@@ -1,12 +1,11 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using EmployeeDAL.Models;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+
 
 namespace BL.EmployeeBusinessLayer
 {
@@ -38,7 +37,28 @@ namespace BL.EmployeeBusinessLayer
                     commandType: CommandType.StoredProcedure);
             }
         }
+        public async Task<IEnumerable<EmployeeModel>> GetTerminatedByID(int EmployeeID)
+        {
+            using (var sqlConnection = new SqlConnection(connectionstring))
+            {
+                await sqlConnection.OpenAsync();
+                var parameters = new DynamicParameters();
+                parameters.Add("@EmployeeID", EmployeeID);
+                return await sqlConnection.QueryAsync<EmployeeModel>("GetTerminatedEmployeeById", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+        public async Task<IEnumerable<EmployeeModel>> TerminatedEmployees()
+        {
+            using (var sqlConnection = new SqlConnection(connectionstring))
+            {
+                await sqlConnection.OpenAsync();
+                return await sqlConnection.QueryAsync<EmployeeModel>(
+                    "TerminatedEmployees",
+                    null,
+                    commandType: CommandType.StoredProcedure);
 
+            }
+        }
         public async Task<Employee> UpdateEmployee(Employee employee)
         {   
             if (employee != null)
@@ -94,6 +114,9 @@ namespace BL.EmployeeBusinessLayer
             }
             return null;
         }
+
+   
+
 
         //GET Gender, Nationality##########################################################
         public async Task<IEnumerable<GenderModel>> GetGender()

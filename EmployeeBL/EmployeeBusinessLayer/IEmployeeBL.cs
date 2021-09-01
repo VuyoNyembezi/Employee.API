@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EmployeeDAL.Models;
-using EmployeeDAL.Admin;
 
 namespace BL.EmployeeBusinessLayer
 {
@@ -15,6 +11,8 @@ namespace BL.EmployeeBusinessLayer
         Task<Employee> UpdateEmployee(Employee employee);
         Task<Employee> TermianteEmployee(Employee employee);
         Task<Employee> InsertEmployee(Employee employee);
+        Task<IEnumerable<EmployeeModel>> TerminatedEmployees();
+        Task<IEnumerable<EmployeeModel>> GetTerminatedByID(int EmployeeID);
 
         Task<IEnumerable<GenderModel>> GetGender();
         Task<IEnumerable<NationalityModel>> GetNationality();

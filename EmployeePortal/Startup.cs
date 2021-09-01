@@ -1,20 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using BL.EmployeeBusinessLayer;
 using BL.Logging;
 using BL.UserBussinessLayer;
-using EmployeeDAL.Models;
+
 
 namespace EmployeePortal
 {
@@ -25,7 +17,6 @@ namespace EmployeePortal
             Configuration = configuration;
         }
         public IConfiguration Configuration { get; }
-
         private readonly string _AllowCors = "CorsPolicy";
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -38,7 +29,6 @@ namespace EmployeePortal
             services.AddTransient<IEmployeeBL, EmployeeBL>();
             services.AddScoped<IUserBL, UserBL>();
             services.AddSingleton<ILogsManager, LogsManagers>();
-
             services.AddControllers();
             services.AddRouting();
         }
@@ -50,7 +40,6 @@ namespace EmployeePortal
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
             app.UseAuthorization();
             app.UseCors(_AllowCors);
