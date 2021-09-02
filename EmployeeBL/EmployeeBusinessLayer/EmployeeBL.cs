@@ -5,13 +5,18 @@ using EmployeeDAL.Models;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
-
+using Microsoft.Extensions.Configuration;
 
 namespace BL.EmployeeBusinessLayer
 {
     public class EmployeeBL : IEmployeeBL
     {
-       private readonly string connectionstring = "Server=(localdb)\\mssqllocaldb;Database=Testing;Trusted_Connection=True;";
+        private string connectionstring;
+        public EmployeeBL(IConfiguration configuration )
+        {
+            connectionstring = configuration.GetConnectionString("DefaultConnection");
+        }
+      
         public async Task<IEnumerable<EmployeeModel>> GetEmployees()
         {         
             using (var sqlConnection = new SqlConnection(connectionstring))
@@ -56,7 +61,6 @@ namespace BL.EmployeeBusinessLayer
                     "TerminatedEmployees",
                     null,
                     commandType: CommandType.StoredProcedure);
-
             }
         }
         public async Task<Employee> UpdateEmployee(Employee employee)

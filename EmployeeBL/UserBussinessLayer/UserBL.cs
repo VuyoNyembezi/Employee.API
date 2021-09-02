@@ -7,15 +7,18 @@ using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using EmployeeDAL.Admin;
-
+using Microsoft.Extensions.Configuration;
 
 namespace BL.UserBussinessLayer
 {
     public class UserBL :IUserBL
     {
         TestingContext _db = new TestingContext();
-    
-        private readonly string connectionstring = "Server=(localdb)\\mssqllocaldb;Database=Testing;Trusted_Connection=True;";
+        private string connectionstring;
+        public UserBL(IConfiguration configuration)
+        {
+            connectionstring = configuration.GetConnectionString("DefaultConnection");
+        }
         public async Task<int> CreateProfile(Register register)
         { 
             if (register != null)
@@ -94,7 +97,71 @@ namespace BL.UserBussinessLayer
             return null;
         }
 
-        //Get Departments ,Roles, Cities##############################################
+        public async Task<Users> ChangeRole(Users users)
+        {
+            var getUser = (from s in _db.User where s.Id == users.Id select s).FirstOrDefault();
+            if (getUser !=null)
+            {
+                using (var sqlConnection = new SqlConnection(connectionstring))
+                {
+                    await sqlConnection.OpenAsync();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@Id", users.Id);
+                    parameters.Add("@RoleId", users.FkRoleId);
+
+                    await sqlConnection.ExecuteAsync("UpdateSystemUserRole", parameters, commandType: CommandType.StoredProcedure);
+                }
+                return users;
+
+            }
+            return null;
+        }
+
+        public async Task<Users> RemoveUser(Users objRemove)
+        {
+            var getUser = (from s in _db.User where s.Id == objRemove.Id select s).FirstOrDefault();
+            if (getUser != null)
+            {
+                using (var sqlConnection = new SqlConnection(connectionstring))
+                {
+                    await sqlConnection.OpenAsync();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@Id", objRemove.Id);
+
+                    await sqlConnection.ExecuteAsync("DeleteUser", parameters, commandType: CommandType.StoredProcedure);
+                }
+                return objRemove;
+            }
+            return null;
+
+        }
+
+
+
+        //Get Departments ,Roles, Cities,Users##############################################
+        public async Task<IEnumerable<UsersModel>> GetUsers()
+        {
+            using (var sqlConnection = new SqlConnection(connectionstring))
+            {
+                await sqlConnection.OpenAsync();
+                return await sqlConnection.QueryAsync<UsersModel>("SelectAllSystemUsers", null, commandType: CommandType.StoredProcedure);
+            }
+        }
+        public async Task<IEnumerable<UsersModel>> Get_User_By_Id(int Id)
+        {
+            using (var sqlConnection = new SqlConnection(connectionstring))
+            {
+                await sqlConnection.OpenAsync();
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", Id);
+
+                return await sqlConnection.QueryAsync<UsersModel>("SelectSystemUserById",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+
         public async Task<IEnumerable<DepartmentModel>> GetDepartments()
         { 
             using (var sqlConnection = new SqlConnection(connectionstring))

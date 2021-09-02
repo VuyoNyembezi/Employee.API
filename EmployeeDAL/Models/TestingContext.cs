@@ -13,8 +13,7 @@ namespace EmployeeDAL.Models
         {
         }
 
-        public TestingContext(DbContextOptions<TestingContext> options)
-            : base(options)
+        public TestingContext(DbContextOptions<TestingContext> options) : base(options)
         {
         }
         public virtual DbSet<Employee> Employees { get; set; }
@@ -36,6 +35,8 @@ namespace EmployeeDAL.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<Employee>(entity =>

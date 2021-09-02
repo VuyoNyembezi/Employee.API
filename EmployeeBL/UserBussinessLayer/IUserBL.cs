@@ -10,8 +10,12 @@ namespace BL.UserBussinessLayer
         Task<int> CreateProfile(Register register);
         Task<UserModel> Adminlogin(Login login);
         Task<Users> PasswordReset(Users login);
+        Task<IEnumerable<UsersModel>> GetUsers();
+        Task<IEnumerable<UsersModel>> Get_User_By_Id(int Id);
+        Task<Users> RemoveUser(Users objRemove);
         Task<IEnumerable<DepartmentModel>> GetDepartments();
         Task<IEnumerable<CityModel>> GetCities();
         Task<IEnumerable<RolesModel>> GetRoles();
+        Task<Users> ChangeRole(Users users);
     }
 }

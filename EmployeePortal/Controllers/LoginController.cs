@@ -114,6 +114,28 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
             }
         }
+        [Route("ChangeRole")]
+        public async Task<ActionResult<Response>> ChangeRole(Users users)
+        {
+            try
+            {
+                var result = await _loginbl.ChangeRole(users);
+                if (result != null)
+                {
+                    _logger.Infor($"User with Email = {users.Email} role is changed");
+                    return new Response { Status = "Success", Message = "Role Changed successful" };
+                }
+                return new Response { Status = "Failed", Message = "Changing role proccess failed" };
+            }
+            catch (Exception ex)
+            {
+
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
+            }
+            
+        }
+
 
         [Route("Roles")]
         [HttpGet]
@@ -159,5 +181,60 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,"Error retrieving data from the database");
             }
         }
+
+       
+        [HttpGet]
+        [Route ("Users")]
+        public async Task<ActionResult> GetUsers()
+        {
+            try
+            {
+                return Ok(await _loginbl.GetUsers());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+            }
+        }
+        [HttpGet("Users/{Id}")]
+        public async Task<ActionResult<Object>> GetUser(int Id)
+        {
+            try
+            {
+                var result = Ok(await _loginbl.Get_User_By_Id(Id));
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the server");
+            }
+        }
+        [Route ("RemoveUser")]
+        [HttpDelete]
+        public async Task<ActionResult<Response>> RemoveUser(Users removeuser)
+        {
+            try
+            {
+                var result = await _loginbl.RemoveUser(removeuser);
+                if (result != null)
+                {
+                    _logger.Infor($"User with Id = {removeuser.Id} is removed ");
+                    return new Response { Status = "Success", Message = "Account removed successful" };
+                }
+                return new Response { Status = "Failed", Message = "process failed please check  input" };
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
+            }
+        }
+
     }
 }
