@@ -14,7 +14,6 @@ namespace EmployeeDAL.Models
         public int FkGenderId { get; set; }
         public int FkNationId { get; set; }
         public bool? IsActive { get; set; }
-
         public virtual Gender FkGender { get; set; }
         public virtual Nationality FkNation { get; set; }
     }

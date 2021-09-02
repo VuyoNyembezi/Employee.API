@@ -12,7 +12,6 @@ namespace EmployeeDAL.Models
         public TestingContext()
         {
         }
-
         public TestingContext(DbContextOptions<TestingContext> options) : base(options)
         {
         }
@@ -161,6 +160,14 @@ namespace EmployeeDAL.Models
                 .HasForeignKey(d => d.FkRoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Users_Roles");
+
+                entity.Property(e => e.ResetPasswordKey)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+                entity.Property(e => e.PassKey_Created)
+             .HasMaxLength(50)
+             .IsUnicode(false);
             });
 
             modelBuilder.Entity<Departments>(entity =>

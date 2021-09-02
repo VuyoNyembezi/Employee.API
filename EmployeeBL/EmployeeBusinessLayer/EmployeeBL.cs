@@ -16,7 +16,7 @@ namespace BL.EmployeeBusinessLayer
         {
             connectionstring = configuration.GetConnectionString("DefaultConnection");
         }
-      
+
         public async Task<IEnumerable<EmployeeModel>> GetEmployees()
         {         
             using (var sqlConnection = new SqlConnection(connectionstring))
@@ -118,9 +118,6 @@ namespace BL.EmployeeBusinessLayer
             }
             return null;
         }
-
-   
-
 
         //GET Gender, Nationality##########################################################
         public async Task<IEnumerable<GenderModel>> GetGender()

@@ -11,10 +11,8 @@ namespace EmployeeDAL.Models
         {
             Employees = new HashSet<Employee>();
         }
-
         public int GenderId { get; set; }
         public string GenderType { get; set; }
-
         public virtual ICollection<Employee> Employees { get; set; }
     }
 }

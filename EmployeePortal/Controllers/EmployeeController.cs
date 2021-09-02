@@ -21,7 +21,6 @@ namespace EmployeePortal.Controllers
             _employeeBL = employeeBL;
             _logger = logger;
         }
-
         [HttpGet]     
         public async Task<ActionResult<Object>> Get()
         {
@@ -36,7 +35,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from database server");
             }
         }
-
         [HttpGet("{EmployeeID}")]
         public async Task<ActionResult<Object>> Get(int EmployeeID)
         {
@@ -57,8 +55,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
-      
-
         [HttpGet]
      [Route("Terminated")]
         public async Task<ActionResult<Object>> GetTerminatedEmployees()
@@ -91,10 +87,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the server");
             }
         }
-
-
-
-
         [HttpPut]    
         public async Task<ActionResult<Employee>> UpdateEmployee(Employee employee)
         {   
@@ -114,7 +106,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
             }    
         }
-
         [HttpDelete]
         public async Task<ActionResult<Employee>> TerminateEmployee(Employee employee)
         {
@@ -134,7 +125,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing the Database ");
             }        
         }
-
         [HttpPost]
         public async Task<ActionResult<Employee>> InsertEmployee(Employee employee)
         {
@@ -154,8 +144,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Server Error, try again or contact support");
             }       
         }
-
-
         [Route("Gender")]
         [HttpGet]
         public async Task<ActionResult> GetGenders()

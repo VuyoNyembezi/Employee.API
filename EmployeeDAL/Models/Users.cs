@@ -16,6 +16,9 @@ namespace EmployeeDAL.Models
         public int FkDepartmentId { get; set; }
 
         public string VerificationCode { get; set; }
+
+        public string ResetPasswordKey { get; set; }
+        public DateTime? PassKey_Created { get; set; }
         public int FkRoleId { get; set; }
 
         public virtual Roles FkRole { get; set; }

@@ -73,7 +73,7 @@ namespace BL.UserBussinessLayer
             return null;
         }
 
-        public async Task<Users> PasswordReset(Users reset)
+        public async Task<Users> AdminPasswordReset(Users reset)
         {
             var getUser = (from s in _db.User where s.Email == reset.Email select s).FirstOrDefault();
             if (reset != null)
@@ -96,6 +96,63 @@ namespace BL.UserBussinessLayer
             }
             return null;
         }
+        public async Task<Users> ForgotPassword(Users User_Forgotten_Password)
+        {
+            var getUser = (from s in _db.User where s.Email == User_Forgotten_Password.Email select s).FirstOrDefault();
+            if (getUser != null && User_Forgotten_Password.ResetPasswordKey == getUser.ResetPasswordKey)
+            {
+               
+                    using (var sqlConnection = new SqlConnection(connectionstring))
+                    {
+                        var keyNew = BLSecurity.GeneratePassword(10);
+                        var password = BLSecurity.EncodePassword(User_Forgotten_Password.Password, keyNew);
+
+                        User_Forgotten_Password.Password = password;
+                        User_Forgotten_Password.VerificationCode = keyNew;
+
+                        await sqlConnection.OpenAsync();
+                        var parameters = new DynamicParameters();
+                        parameters.Add("@Email", User_Forgotten_Password.Email);
+                        parameters.Add("@Password", User_Forgotten_Password.Password);
+                        parameters.Add("@PassKey", User_Forgotten_Password.ResetPasswordKey);
+                        parameters.Add("@VerificationCode", User_Forgotten_Password.VerificationCode);
+
+                        await sqlConnection.ExecuteAsync("ForgottenPassword", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                    return User_Forgotten_Password;
+         
+            }
+            return null;
+        }
+
+
+
+
+
+        public async Task<Users> Passkey(Users forgotpass)
+        {
+            var getUser = (from s in _db.User where s.Email == forgotpass.Email select s).FirstOrDefault();
+            if (getUser != null)
+            {
+                using (var sqlConnection = new SqlConnection(connectionstring))
+                {
+                    var PassResetKey = BLSecurity.GeneratePassword(10);
+                    forgotpass.ResetPasswordKey = PassResetKey;
+                    await sqlConnection.OpenAsync();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@Email", forgotpass.Email);
+                    parameters.Add("@ResetKey", forgotpass.ResetPasswordKey);
+
+                    await sqlConnection.ExecuteAsync("PasswordKey", parameters, commandType: CommandType.StoredProcedure);
+                }
+                return forgotpass;
+            }
+            return null;
+        }
+
+
+
+
 
         public async Task<Users> ChangeRole(Users users)
         {
@@ -112,7 +169,6 @@ namespace BL.UserBussinessLayer
                     await sqlConnection.ExecuteAsync("UpdateSystemUserRole", parameters, commandType: CommandType.StoredProcedure);
                 }
                 return users;
-
             }
             return null;
         }
@@ -133,10 +189,7 @@ namespace BL.UserBussinessLayer
                 return objRemove;
             }
             return null;
-
         }
-
-
 
         //Get Departments ,Roles, Cities,Users##############################################
         public async Task<IEnumerable<UsersModel>> GetUsers()
@@ -160,7 +213,6 @@ namespace BL.UserBussinessLayer
                     commandType: CommandType.StoredProcedure);
             }
         }
-
 
         public async Task<IEnumerable<DepartmentModel>> GetDepartments()
         { 

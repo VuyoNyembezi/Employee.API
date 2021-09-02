@@ -8,14 +8,12 @@ namespace EmployeeDAL.Models
 {
     public partial class Departments
     {
-
         public Departments()
         {
             User = new HashSet<Users>();
         }
         public int DepartmentID { get; set; }
         public string DepartmentName { get; set; }
-
         public virtual ICollection<Users> User { get; set; }
     }
 }

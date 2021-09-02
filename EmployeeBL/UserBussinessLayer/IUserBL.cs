@@ -9,7 +9,8 @@ namespace BL.UserBussinessLayer
     {
         Task<int> CreateProfile(Register register);
         Task<UserModel> Adminlogin(Login login);
-        Task<Users> PasswordReset(Users login);
+        Task<Users> AdminPasswordReset(Users login);
+        Task<Users> ForgotPassword(Users User_Forgotten_Password);
         Task<IEnumerable<UsersModel>> GetUsers();
         Task<IEnumerable<UsersModel>> Get_User_By_Id(int Id);
         Task<Users> RemoveUser(Users objRemove);
@@ -17,5 +18,9 @@ namespace BL.UserBussinessLayer
         Task<IEnumerable<CityModel>> GetCities();
         Task<IEnumerable<RolesModel>> GetRoles();
         Task<Users> ChangeRole(Users users);
+
+
+        Task<Users> Passkey(Users forgotpass);
+
     }
 }

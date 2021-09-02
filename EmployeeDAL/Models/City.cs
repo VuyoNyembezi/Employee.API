@@ -14,7 +14,6 @@ namespace EmployeeDAL.Models
         }
         public int CityID { get; set; }
         public string CityName { get; set; }
-
         public virtual ICollection<Users> User { get; set; }
     }
 }

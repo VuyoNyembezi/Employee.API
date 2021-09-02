@@ -14,7 +14,6 @@ namespace EmployeeDAL.Models
         public string AdminName { get; set; }
         public string City { get; set; }
         public string Department { get; set; }
-
         public string VerificationCode { get; set; }
     }
 }

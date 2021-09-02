@@ -11,10 +11,8 @@ namespace EmployeeDAL.Models
         {
             Employees = new HashSet<Employee>();
         }
-
         public int NationId { get; set; }
         public string NationalityGroup { get; set; }
-
         public virtual ICollection<Employee> Employees { get; set; }
     }
 }

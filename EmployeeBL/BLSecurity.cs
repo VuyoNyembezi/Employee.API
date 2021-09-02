@@ -75,5 +75,10 @@ namespace BL
                 throw new Exception("Error in base64Decode" + ex.Message);
             }
         }
+
+        internal static object EncodePassword(string password, object keyNew)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
