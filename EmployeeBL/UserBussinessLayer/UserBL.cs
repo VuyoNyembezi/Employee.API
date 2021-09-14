@@ -21,31 +21,32 @@ namespace BL.UserBussinessLayer
         }
         public async Task<int> CreateProfile(Register register)
         { 
+
             if (register != null)
             {
-                using (var sqlConnection = new SqlConnection(connectionstring))
-                {
-                    var KeyNew = BLSecurity.GeneratePassword(10);
-                    var password = BLSecurity.EncodePassword(register.Password, KeyNew);
-                    register.Password = password;
-                    register.VerificationCode = KeyNew;
-                    sqlConnection.Open();
-                    var parameters = new DynamicParameters();
+                    using (var sqlConnection = new SqlConnection(connectionstring))
+                    {
+                        var KeyNew = BLSecurity.GeneratePassword(10);
+                        var password = BLSecurity.EncodePassword(register.Password, KeyNew);
+                        register.Password = password;
+                        register.VerificationCode = KeyNew;
+                        sqlConnection.Open();
+                        var parameters = new DynamicParameters();
 
-                    parameters.Add("@Email", register.Email);
-                    parameters.Add("@Password", register.Password);
-                    parameters.Add("@AdminName", register.AdminName);
-                    parameters.Add("@City", register.CityID);
-                    parameters.Add("@Department", register.DepartmentID);
-                    parameters.Add("@VerificationCode", register.VerificationCode);
-                    parameters.Add("@FK_Role", register.RoleID);
-                    parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.Output, size: 2147483647);
+                        parameters.Add("@Email", register.Email);
+                        parameters.Add("@Password", register.Password);
+                        parameters.Add("@AdminName", register.AdminName);
+                        parameters.Add("@City", register.CityID);
+                        parameters.Add("@Department", register.DepartmentID);
+                        parameters.Add("@VerificationCode", register.VerificationCode);
+                        parameters.Add("@FK_Role", register.RoleID);
+                        parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.Output, size: 2147483647);
 
-                     await sqlConnection.ExecuteAsync("AddUser", parameters, commandType: CommandType.StoredProcedure);
-                    var ReturnID = parameters.Get<int>("@Id");
-                    sqlConnection.Close();
-                    return ReturnID;
-                }
+                        await sqlConnection.ExecuteAsync("AddUser", parameters, commandType: CommandType.StoredProcedure);
+                        var ReturnID = parameters.Get<int>("@Id");
+                        sqlConnection.Close();
+                        return ReturnID;
+                    }
             }
             return 0;
         }

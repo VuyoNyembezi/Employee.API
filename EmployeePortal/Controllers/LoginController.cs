@@ -46,6 +46,12 @@ namespace EmployeePortal.Controllers
                         returnobj.Status = "Success";
                         returnobj.Message = "user added successful";
                     }
+                    else if (result == -2)
+                    {
+                        returnobj.ReturnId = result;
+                        returnobj.Status = "Failed";
+                        returnobj.Message = "email already used successful";
+                    }
                     return returnobj;
                 }               
                 return returnobj;               
