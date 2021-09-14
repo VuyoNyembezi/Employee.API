@@ -7,39 +7,44 @@ using BL.Logging;
 using System;
 using System.Threading.Tasks;
 using BL.UserBussinessLayer;
+using BL.TokenServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeePortal.Controllers
 {
     [Route("api/login")]
-    
+
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class LoginController : ControllerBase
     {
         private IUserBL _loginbl;
         private ILogsManager _logger;
-        public LoginController(IUserBL loginBL,ILogsManager logger)
+        private readonly IToken _tokenService;
+        public LoginController(IUserBL loginBL, ILogsManager logger, IToken tokenService)
         {
             _loginbl = loginBL;
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         [Route("InsertUser")]
         [HttpPost]
+        [Authorize()]
         public async Task<Response> RegisterUser(Register register)
         {
             var returnobj = new Response
             {
                 ReturnId = 0,
-                Status="Failed",
-                Message="sign up processs failed"
+                Status = "Failed",
+                Message = "sign up processs failed"
             };
             try
             {
                 if (register != null)
                 {
                     _logger.Infor($"new user Added to the Sytem administration Rights name : {register.AdminName }, Email : { register.Email}");
-                   var result = await _loginbl.CreateProfile(register);
+                    var result = await _loginbl.CreateProfile(register);
                     if (result >= 1)
                     {
                         returnobj.ReturnId = result;
@@ -53,8 +58,8 @@ namespace EmployeePortal.Controllers
                         returnobj.Message = "email already used successful";
                     }
                     return returnobj;
-                }               
-                return returnobj;               
+                }
+                return returnobj;
             }
             catch (Exception ex)
             {
@@ -75,17 +80,19 @@ namespace EmployeePortal.Controllers
             };
             try
             {
-                if (login != null)
+                var results = await _loginbl.Adminlogin(login);
+                if (results != null)
                 {
-                    _logger.Infor($"Admin/User with email = {login.Email} Accessed the Sytem");
-                    var results = await _loginbl.Adminlogin(login);
-                    if (results != null)
+                    var token = _tokenService.GenerateJwtToken(login.Email);
+                    if (token != null)
                     {
+                        _logger.Infor($"Admin/User with email = {login.Email} Accessed the Sytem");
                         returnobj.Status = "Success";
                         returnobj.Message = "Log in successfully";
                         returnobj.Role = results.RoleID;
+                        returnobj.Token = token;
                     }
-                    return returnobj;
+
                 }
                 return returnobj;
             }
@@ -98,19 +105,20 @@ namespace EmployeePortal.Controllers
 
         [Route("Reset")]
         [HttpPut]
+        [Authorize()]
         public async Task<ActionResult<Response>> ResetPasword(Users passwordreset)
         {
             try
             {
                 var result = await _loginbl.AdminPasswordReset(passwordreset);
-                if (result !=null)
+                if (result != null)
                 {
-                    if (passwordreset.Email !=null)
+                    if (passwordreset.Email != null)
                     {
-                         StatusCode(StatusCodes.Status200OK, $"record with Id = {passwordreset.Email} password Updated");
+                        StatusCode(StatusCodes.Status200OK, $"record with Id = {passwordreset.Email} password Updated");
                     }
                     _logger.Infor($"User's passsword with Email = {passwordreset.Email} is reseted ");
-                    return new Response{Status="Success",Message="Password reset successful"};
+                    return new Response { Status = "Success", Message = "Password reset successful" };
                 }
                 return new Response { Status = "Failed", Message = "process failed please check  input" };
             }
@@ -143,12 +151,13 @@ namespace EmployeePortal.Controllers
 
         [Route("UserResetPass")]
         [HttpPut]
-     public async Task<ActionResult<Response>>generateResetKey(Users forgot)
+        [Authorize()]
+        public async Task<ActionResult<Response>> generateResetKey(Users forgot)
         {
             try
             {
                 var result = await _loginbl.Passkey(forgot);
-                if (result !=null )
+                if (result != null)
                 {
                     _logger.Infor($"User's with Email = {forgot.Email} is reset key sent ");
                     return new Response { Status = "Success", Message = "reset link sent please check your email to get the reset key" };
@@ -163,6 +172,7 @@ namespace EmployeePortal.Controllers
         }
 
         [Route("ChangeRole")]
+        [Authorize()]
         public async Task<ActionResult<Response>> ChangeRole(Users users)
         {
             try
@@ -171,62 +181,21 @@ namespace EmployeePortal.Controllers
                 if (result != null)
                 {
                     _logger.Infor($"User with ID = {users.Id} role is changed to {users.FkRoleId}");
-                    return new Response { Status = "Success", Message = "Role Changed successful" };
+                    return new Response { ReturnId = 1, Status = "Success", Message = "Role Changed successful" };
                 }
-                return new Response { Status = "Failed", Message = "Changing role proccess failed" };
+                else
+                    return new Response { ReturnId = 0, Status = "Failed", Message = "Changing role proccess failed" };
             }
             catch (Exception ex)
             {
-
                 _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
             }
-            
+
         }
-        [Route("Roles")]
+
         [HttpGet]
-        public async Task<ActionResult> GetRoles()
-        {
-            try
-            {
-                return Ok(await _loginbl.GetRoles());
-            }
-            catch(Exception EX)
-            {
-                _logger.Error(EX.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError,"Error retrieving data from the database");
-            }
-        }
-        [Route("Departments")]
-        [HttpGet]
-        public async Task<ActionResult> GetDepartment()
-        {
-            try
-            {
-                return Ok(await _loginbl.GetDepartments());
-            }
-            catch (Exception EX)
-            {
-                _logger.Error(EX.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError,"Error retrieving data from the database");
-            }
-        }
-        [Route("Cities")]
-        [HttpGet]
-        public async Task<ActionResult> GetCity()
-        {
-            try
-            {
-                return Ok(await _loginbl.GetCities());
-            }
-            catch (Exception EX)
-            {
-                _logger.Error(EX.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError,"Error retrieving data from the database");
-            }
-        }
-        [HttpGet]
-        [Route ("Users")]
+        [Route("Users")]
         public async Task<ActionResult> GetUsers()
         {
             try
@@ -257,7 +226,7 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the server");
             }
         }
-        [Route ("RemoveUser")]
+        [Route("RemoveUser")]
         [HttpDelete]
         public async Task<ActionResult<Response>> RemoveUser(Users removeuser)
         {
@@ -275,6 +244,52 @@ namespace EmployeePortal.Controllers
             {
                 _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
+            }
+        }
+
+        //Populates the Drop down Controls of the Administartion Forms
+
+
+        [Route("Roles")]
+        [HttpGet]
+        public async Task<ActionResult> GetRoles()
+        {
+            try
+            {
+                return Ok(await _loginbl.GetRoles());
+            }
+            catch (Exception EX)
+            {
+                _logger.Error(EX.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+            }
+        }
+        [Route("Departments")]
+        [HttpGet]
+        public async Task<ActionResult> GetDepartment()
+        {
+            try
+            {
+                return Ok(await _loginbl.GetDepartments());
+            }
+            catch (Exception EX)
+            {
+                _logger.Error(EX.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+            }
+        }
+        [Route("Cities")]
+        [HttpGet]
+        public async Task<ActionResult> GetCity()
+        {
+            try
+            {
+                return Ok(await _loginbl.GetCities());
+            }
+            catch (Exception EX)
+            {
+                _logger.Error(EX.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
     }

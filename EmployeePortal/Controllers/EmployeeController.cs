@@ -1,6 +1,8 @@
 ﻿using BL.EmployeeBusinessLayer;
 using BL.Logging;
+using EmployeeDAL.Admin;
 using EmployeeDAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +23,10 @@ namespace EmployeePortal.Controllers
             _employeeBL = employeeBL;
             _logger = logger;
         }
-        [HttpGet]     
+        [HttpGet]
+       [Authorize()]
+
+       //Returns the List of Active Employees
         public async Task<ActionResult<Object>> Get()
         {
             try
@@ -36,6 +41,7 @@ namespace EmployeePortal.Controllers
             }
         }
         [HttpGet("{EmployeeID}")]
+        [Authorize()]
         public async Task<ActionResult<Object>> Get(int EmployeeID)
         {
             try
@@ -55,8 +61,12 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
+        //Returns a list of Terminated Employees
+
+        [Route("Terminated")]
         [HttpGet]
-     [Route("Terminated")]
+     
+        [Authorize()]
         public async Task<ActionResult<Object>> GetTerminatedEmployees()
         {
             try
@@ -70,6 +80,7 @@ namespace EmployeePortal.Controllers
             }
         }
         [HttpGet("Terminated/{EmployeeID}")]
+        [Authorize()]
         public async Task<ActionResult<Object>> GetTerminatedById(int EmployeeID)
         {
             try
@@ -87,7 +98,8 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the server");
             }
         }
-        [HttpPut]    
+        [HttpPut]
+        [Authorize()]
         public async Task<ActionResult<Employee>> UpdateEmployee(Employee employee)
         {   
             try
@@ -107,7 +119,8 @@ namespace EmployeePortal.Controllers
             }    
         }
         [HttpDelete]
-        public async Task<ActionResult<Employee>> TerminateEmployee(Employee employee)
+        [Authorize()]
+        public async Task<ActionResult<Response>> TerminateEmployee(Employee employee)
         {
             try
             {
@@ -115,9 +128,9 @@ namespace EmployeePortal.Controllers
                 if (result != null)
                 {
                     _logger.Infor($"Employee with ID {employee.EmployeeId} is Terminated");
-                    return StatusCode(StatusCodes.Status200OK, $"Employee with EmployeeID= {employee.EmployeeId} was Successfully Terminated");    
+                    return new Response { Message = $"Employee with EmployeeID= {employee.EmployeeId} was Successfully Terminated" ,   ReturnId= 1,Status="Success"};    
                 }
-                return null;
+                return   new Response { Message = "Process failed", ReturnId = 0, Status = "Failed" }; ;
             }
             catch (Exception ex)
             {
@@ -126,7 +139,8 @@ namespace EmployeePortal.Controllers
             }        
         }
         [HttpPost]
-        public async Task<ActionResult<Employee>> InsertEmployee(Employee employee)
+        [Authorize()]
+        public async Task<ActionResult<Response>> InsertEmployee(Employee employee)
         {
             try
             {
@@ -134,9 +148,9 @@ namespace EmployeePortal.Controllers
                 if(result != null)
                 {
                     _logger.Infor($"new record succeffully added  {employee.FirstName}  {employee.Surname}");
-                    return StatusCode(StatusCodes.Status200OK, $"new record added {employee.FirstName}  {employee.Surname}");
-                }              
-                 return StatusCode(StatusCodes.Status400BadRequest, "no new record added please check input");
+                    return new Response { ReturnId = 1,Message= "new employee succeffully added to the portal",Status ="Success"};
+                }
+                return   new Response { ReturnId = 0, Message = "perocess to add new employee failed please check input", Status = "Failed" };
             }            
             catch (Exception ex)
             {
@@ -144,6 +158,12 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Server Error, try again or contact support");
             }       
         }
+
+
+
+        ///Populates the drop down controls of the employee Form
+
+
         [Route("Gender")]
         [HttpGet]
         public async Task<ActionResult> GetGenders()

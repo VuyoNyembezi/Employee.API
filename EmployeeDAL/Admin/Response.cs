@@ -12,5 +12,6 @@ namespace EmployeeDAL.Admin
         public string Status { get; set; }
         public string Message { get; set; }
         public int? Role { get; set; }
+          public string Token { get; set; }
     }
 }

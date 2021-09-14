@@ -21,7 +21,6 @@ namespace BL.UserBussinessLayer
         }
         public async Task<int> CreateProfile(Register register)
         { 
-
             if (register != null)
             {
                     using (var sqlConnection = new SqlConnection(connectionstring))
@@ -63,7 +62,6 @@ namespace BL.UserBussinessLayer
                     login.Password = encodingpasswordString;
                     sqlConnection.Open();
                     var parameters = new DynamicParameters();
-
                     parameters.Add("@Email", login.Email);
                     parameters.Add("@Password", encodingpasswordString);
 
@@ -102,12 +100,10 @@ namespace BL.UserBussinessLayer
             var getUser = (from s in _db.User where s.Email == User_Forgotten_Password.Email select s).FirstOrDefault();
             if (getUser != null && User_Forgotten_Password.ResetPasswordKey == getUser.ResetPasswordKey)
             {
-               
                     using (var sqlConnection = new SqlConnection(connectionstring))
                     {
                         var keyNew = BLSecurity.GeneratePassword(10);
                         var password = BLSecurity.EncodePassword(User_Forgotten_Password.Password, keyNew);
-
                         User_Forgotten_Password.Password = password;
                         User_Forgotten_Password.VerificationCode = keyNew;
 
@@ -121,14 +117,9 @@ namespace BL.UserBussinessLayer
                         await sqlConnection.ExecuteAsync("ForgottenPassword", parameters, commandType: CommandType.StoredProcedure);
                     }
                     return User_Forgotten_Password;
-         
             }
             return null;
         }
-
-
-
-
 
         public async Task<Users> Passkey(Users forgotpass)
         {
@@ -151,14 +142,10 @@ namespace BL.UserBussinessLayer
             return null;
         }
 
-
-
-
-
         public async Task<Users> ChangeRole(Users users)
         {
-            var getUser = (from s in _db.User where s.Id == users.Id select s).FirstOrDefault();
-            if (getUser !=null)
+
+            if (users != null)
             {
                 using (var sqlConnection = new SqlConnection(connectionstring))
                 {
@@ -166,12 +153,23 @@ namespace BL.UserBussinessLayer
                     var parameters = new DynamicParameters();
                     parameters.Add("@Id", users.Id);
                     parameters.Add("@RoleId", users.FkRoleId);
+                    parameters.Add("@Response", dbType: DbType.Int32, direction: ParameterDirection.Output, size: 3);
 
                     await sqlConnection.ExecuteAsync("UpdateSystemUserRole", parameters, commandType: CommandType.StoredProcedure);
+                    var ReturnValue = parameters.Get<int>("@Response");
+                    sqlConnection.Close();
+
+                    if (ReturnValue == 0)
+                    {
+                        return users;
+                    }
+                    else if (ReturnValue == 2)
+                    {
+                        return null;
+                    }
                 }
-                return users;
             }
-            return null;
+                    return null;   
         }
 
         public async Task<Users> RemoveUser(Users objRemove)
