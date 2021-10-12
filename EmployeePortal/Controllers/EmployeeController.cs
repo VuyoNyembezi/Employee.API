@@ -23,9 +23,9 @@ namespace EmployeePortal.Controllers
             _employeeBL = employeeBL;
             _logger = logger;
         }
+
         [HttpGet]
        [Authorize()]
-
        //Returns the List of Active Employees
         public async Task<ActionResult<Object>> Get()
         {
@@ -158,8 +158,6 @@ namespace EmployeePortal.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Server Error, try again or contact support");
             }       
         }
-
-
 
         ///Populates the drop down controls of the employee Form
 

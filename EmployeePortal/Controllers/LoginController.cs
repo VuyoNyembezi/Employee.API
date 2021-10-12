@@ -191,7 +191,6 @@ namespace EmployeePortal.Controllers
                 _logger.Error(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Accessing data from the database");
             }
-
         }
 
         [HttpGet]
